@@ -63,15 +63,15 @@ Relaciona-se ao tempo de resposta, processamento e capacidade de uso dos recurso
 *   **Fonte de Medição:** Carimbos de data/hora (timestamps) de início e fim registrados no log de execução do orquestrador de tarefas local.
 *   **Prioridade MoSCoW:** Must
 
-#### RNF-04: Vazão de Ingestão de Dados (Throughput)
-*   **Descrição:** A gravação de dados brutos no repositório analítico local deve possuir vazão adequada para evitar contenção de recursos do hardware local.
-*   **SLI:** Quantidade de registros por segundo carregados e persistidos no banco de dados analítico local pelo pipeline de ingestão.
-*   **SLO:** >= 5.000 registros por segundo.
-*   **Unidade:** Registros inseridos por segundo.
-*   **Janela:** Período de execução da etapa de ingestão de dados brutos (diária).
-*   **Premissas:** O repositório de dados de destino está configurado para permitir a gravação em lotes (bulk inserts) e o sistema de armazenamento local possui desempenho de escrita regular.
-*   **Fonte de Medição:** Logs de auditoria interna e telemetria gerados pela engine de ingestão do pipeline.
-*   **Prioridade MoSCoW:** Should
+#### RNF-04: Rastreabilidade de Erros e Logs de Processamento (Analisabilidade)
+*   **Descrição:** Garantia de observabilidade sobre o pipeline de processamento de dados, mapeando e registrando estruturalmente todos os erros ocorridos durante as etapas de ingestão, transformação e carga.
+*   **SLI:** Percentual de falhas de processamento e execução (quebras de tipos, erros de junção e violações de regras) capturadas de forma legível e gravadas nos arquivos de log.
+*   **SLO:** 100% das falhas de ETL capturadas em log.
+*   **Unidade:** Percentual (%) de falhas rastreáveis e logadas.
+*   **Janela:** Lote de processamento diário.
+*   **Premissas:** O container do pipeline monta a pasta de logs local para persistência de dados.
+*   **Fonte de Medição:** Inspeção e validação do volume de logs montado localmente no host.
+*   **Prioridade MoSCoW:** Must
 
 ---
 
@@ -214,7 +214,7 @@ A tabela abaixo resume e consolida todos os Requisitos Não Funcionais, fornecen
 | **RNF-01** | Adequação Funcional | % de registros na tabela de detalhes de fatos com chaves estrangeiras (`FK`) apontando para chaves válidas. | 100% de integridade referencial. | Logs de integridade lógica do pipeline | **Must** |
 | **RNF-02** | Adequação Funcional | Razão entre registros gravados e linhas físicas lidas nos arquivos de origem. | Razão = 1.0 (100% de linhas salvas). | Logs internos de auditoria de ingestão | **Must** |
 | **RNF-03** | Eficiência de Desempenho | Tempo de execução completa do pipeline de dados analíticos local. | <= 45 minutos. | Logs e timestamps do orquestrador local | **Must** |
-| **RNF-04** | Eficiência de Desempenho | Quantidade de registros persistidos por segundo no repositório de destino analítico. | >= 5.000 registros por segundo. | Telemetria de execução da engine de ingestão | **Should** |
+| **RNF-04** | Manutenibilidade (Analisabilidade) | Rastreabilidade de erros e logs de processamento. | 100% das falhas de ETL capturadas em log. | Inspeção do volume de logs montado no host | **Must** |
 | **RNF-05** | Compatibilidade | % de consultas analíticas locais suspensas/canceladas por lock exclusivo de escrita. | 0% de interrupções por lock de escrita. | Logs de conexões/bloqueios do banco analítico | **Should** |
 | **RNF-06** | Compatibilidade | % de arquivos processados com sucesso sob codificação de caracteres universal. | 100% de leitura de arquivos em UTF-8. | logs de erros e parser de caracteres | **Must** |
 | **RNF-07** | Usability | Tempo de execução do banco de dados para queries SQL analíticas de agregação complexas. | <= 5.0 segundos no 95º percentil (P95). | Logs internos de queries do banco local | **Should** |

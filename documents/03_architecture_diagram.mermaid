@@ -1,0 +1,37 @@
+graph TD
+    subgraph Host[Máquina Local - Host OS]
+        subgraph Diretorios[Diretórios do Host]
+            DIR_DATA[./data/ - Metadados e DB]
+            DIR_DB[./data/northwind.duckdb - Arquivo de Banco]
+        end
+        
+        subgraph RedeDocker[Rede Docker Compose]
+            subgraph ContainerMinio[container: minio-s3]
+                minio_srv[Minio Object Storage]
+                minio_bucket[Bucket: northwind-raw]
+            end
+
+            subgraph ContainerDBT[container: dbt-runner]
+                dbt_exec[dbt-duckdb Engine]
+            end
+            
+            subgraph ContainerStreamlit[container: streamlit-dashboard]
+                streamlit_exec[Streamlit App - Visualização]
+            end
+        end
+    end
+    
+    BrowserAdmin[Navegador Admin] -->|Upload de CSVs / Porta 9001| ContainerMinio
+    ContainerMinio -->|S3 API / httpfs| ContainerDBT
+    DIR_DB <-->|Volume: Leitura e Escrita| ContainerDBT
+    DIR_DB --->|Volume: Leitura Compartilhada| ContainerStreamlit
+    ContainerStreamlit -->|Porta Exposta: 8501| Browser[Navegador Web Local]
+
+%% Riscos do Arquivo:
+%% 1. Bloqueio de Concorrência de Arquivo do DuckDB entre dbt (escrita) e Streamlit (leitura).
+%% 2. Overhead de rede na leitura de arquivos do Minio via protocolo S3 local.
+%% 3. Vazamento de chaves de acesso do Minio caso expostas no código do dbt (mitigar via envs).
+%%
+%% Ambiguidades do Arquivo:
+%% 1. Como será feito o controle de expurgo de versões antigas de arquivos no bucket do Minio.
+%% 2. Se a autenticação do dbt com o Minio usará chaves estáticas ou credenciais temporárias do IAM local.
