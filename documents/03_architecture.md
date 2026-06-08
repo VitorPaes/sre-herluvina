@@ -181,4 +181,3 @@ Todas as ferramentas selecionadas são open source e rodam localmente no hardwar
 2.  **Representação Gráfica Logística no Streamlit**: Permanece ambíguo se o painel logístico do Streamlit deve exibir o lead time médio em dias úteis locais (excluindo finais de semana e feriados nacionais) ou em dias corridos padrão. Isso afeta o cálculo das fórmulas SQL na camada intermediária do dbt.
 
 ---
-*Fim do Documento de Arquitetura.*
