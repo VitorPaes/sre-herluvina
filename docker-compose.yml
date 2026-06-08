@@ -1,0 +1,67 @@
+# docker-compose.yml
+#
+# Riscos:
+# 1. Conflitos de portas locais (9000, 9001, 8501) caso o host já possua outros serviços em execução nestas portas.
+# 2. Problemas de permissão de escrita/leitura nos volumes locais montados do host (./data, ./logs), especialmente se as UIDs/GIDs do host diferirem do container.
+# 3. Falha de comunicação S3 local se o container python-pipeline tentar se conectar ao MinIO antes do serviço MinIO estar totalmente pronto e aceitando conexões.
+#
+# Ambiguidades:
+# 1. Se os dados armazenados no bucket do MinIO persistirão entre reinicializações completas de container sem volumes nomeados mapeados especificamente para buckets individuais.
+# 2. Se a flag de modo read-only do DuckDB compartilhada no volume do host é suficiente para evitar falhas de concorrência entre os containers do pipeline e do Streamlit.
+
+version: '3.8'
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: northwind-minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  python-pipeline:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: northwind-pipeline
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./bin:/app/bin
+      - ./transform:/app/transform
+      - ./logs:/app/logs
+      - ./app:/app/app
+    depends_on:
+      minio:
+        condition: service_healthy
+
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: northwind-streamlit
+    command: streamlit run app/main.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./app:/app/app
+    depends_on:
+      - python-pipeline
+
+volumes:
+  minio_data:
