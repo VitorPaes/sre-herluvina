@@ -4,7 +4,7 @@ A Northwind Traders é uma distribuidora global de alimentos especializados que 
 ## Restrições duras
 - Sem cloud tudo local.
 - Sem secrets em codigo.
-- Sem provisionar. Apenas markdown e Mermaid.
+- Sem provisionar.
 
 ## Saida esperada
 - Markdown valido com cabecalhos hierarquicos.
