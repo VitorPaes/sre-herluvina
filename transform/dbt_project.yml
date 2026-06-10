@@ -1,0 +1,36 @@
+# transform/dbt_project.yml
+#
+# Riscos:
+# 1. Incompatibilidade de versão do dbt configurada no arquivo de projeto com o binário real instalado na imagem Docker.
+# 2. Materialização ineficiente (ex: table na camada de staging) causando lentidão no pipeline devido ao excesso de escrita em disco local.
+# 3. Falha na execução da limpeza do diretório target se houver bloqueio de processos externos no arquivo do DuckDB.
+#
+# Ambiguidades:
+# 1. Se a pasta de pacotes (dbt_packages) deve ser versionada ou mantida localmente no volume temporário do container.
+# 2. Se as materializações dos marts analíticos finais devem ser incrementais ou sempre recriadas como table (full-refresh).
+
+name: 'northwind'
+version: '1.0.0'
+config-version: 2
+
+profile: 'northwind'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  northwind:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table

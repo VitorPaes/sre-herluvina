@@ -1,0 +1,26 @@
+# transform/models/staging/sources.yml
+#
+# Riscos:
+# 1. Caminho S3 incorreto ou inacessível devido a falhas de rede com o MinIO local durante a compilação do dbt.
+# 2. Schema drift se novas colunas forem adicionadas ou renomeadas no CSV de origem sem atualização das fontes.
+# 3. Falha de parse de delimitador de arquivos ou cabeçalhos nulos que causem perda de registros lidos do S3.
+#
+# Ambiguidades:
+# 1. Se a propriedade external_location precisa de parâmetros de formatação como read_csv_auto explícitos.
+# 2. Se a codificação padrão de caracteres em arquivos legados (ex: latin1) quebrará a compilação de metadados.
+
+version: 2
+
+sources:
+  - name: minio
+    description: "Fontes de dados brutos armazenadas no bucket local do MinIO"
+    loader: MinIO S3 API (httpfs)
+    tables:
+      - name: northwind_orders
+        description: "Cabeçalho das ordens de venda da Northwind"
+        meta:
+          external_location: "s3://northwind-raw/northwind_orders.csv"
+      - name: northwind_order_details
+        description: "Detalhes de itens de linha por ordem de venda"
+        meta:
+          external_location: "s3://northwind-raw/northwind_order_details.csv"

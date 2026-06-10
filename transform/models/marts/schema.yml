@@ -1,0 +1,82 @@
+# transform/models/marts/schema.yml
+#
+# Riscos:
+# 1. Falha de compilação dos testes do dbt caso a sintaxe yaml de relacionamentos de chaves estrangeiras esteja mal formatada.
+# 2. Testes muito restritivos que causem falha de execução diária por pequenos desvios normais na origem transacional.
+# 3. Overhead de tempo de execução se dezenas de testes de relacionamento forem disparados concorrentemente em base muito grande.
+#
+# Ambiguidades:
+# 1. Se a integridade de chaves estrangeiras deve falhar de forma rígida (bloqueante) ou se deve emitir apenas avisos (warn).
+# 2. Se nulos em chaves estrangeiras são aceitáveis para ordens pontuais sem clientes associados.
+
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Tabela dimensional de clientes únicos"
+    columns:
+      - name: customer_id
+        description: "Chave primária do cliente"
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_products
+    description: "Tabela dimensional de produtos e categorias analíticas"
+    columns:
+      - name: product_id
+        description: "Chave primária do produto"
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_employees
+    description: "Tabela dimensional de funcionários da Northwind"
+    columns:
+      - name: employee_id
+        description: "Chave primária do funcionário"
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_shippers
+    description: "Tabela dimensional de transportadoras logísticas"
+    columns:
+      - name: shipper_id
+        description: "Chave primária da transportadora"
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_order_items
+    description: "Tabela fato de itens de ordens contendo rateio de custos e lucro líquido"
+    columns:
+      - name: order_id
+        description: "ID do pedido"
+        tests:
+          - not_null
+      - name: product_id
+        description: "ID do produto"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+      - name: customer_id
+        description: "ID do cliente"
+        tests:
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+      - name: employee_id
+        description: "ID do funcionário"
+        tests:
+          - relationships:
+              to: ref('dim_employees')
+              field: employee_id
+      - name: shipper_id
+        description: "ID da transportadora"
+        tests:
+          - relationships:
+              to: ref('dim_shippers')
+              field: shipper_id

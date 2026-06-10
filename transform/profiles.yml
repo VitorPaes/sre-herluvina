@@ -1,0 +1,26 @@
+# transform/profiles.yml
+#
+# Riscos:
+# 1. Exposição acidental de credenciais caso as variáveis de ambiente não sejam utilizadas e chaves estáticas sejam escritas.
+# 2. Concorrência ineficiente ou travamentos se o número de threads configurado for maior do que 1 para escrita no arquivo local do DuckDB.
+# 3. Caminhos inválidos do arquivo do DuckDB (/app/data/northwind.duckdb) se a estrutura de pastas no container diferir do host.
+#
+# Ambiguidades:
+# 1. Se a flag s3_use_ssl é obrigatória como false para o MinIO local.
+# 2. Se as variáveis de ambiente do S3 mockadas no MinIO são herdadas automaticamente pelo dbt de forma transparente.
+
+northwind:
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_DATABASE_PATH', '/app/data/northwind.duckdb') }}"
+      threads: 1
+      extensions:
+        - httpfs
+      settings:
+        s3_endpoint: "{{ env_var('MINIO_ENDPOINT', 'minio:9000') }}"
+        s3_access_key_id: "{{ env_var('AWS_ACCESS_KEY_ID', 'admin') }}"
+        s3_secret_access_key: "{{ env_var('AWS_SECRET_ACCESS_KEY', 'supersecretpassword') }}"
+        s3_use_ssl: false
+        s3_url_style: path
+  target: dev

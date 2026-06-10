@@ -216,3 +216,41 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Environment & Secrets (AIOX)
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Dependencies (AIOX)
+node_modules/
+node_modules
+
+# Build & Logs (AIOX)
+logs/
+
+# IDE & OS (AIOX)
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# AIOX Local (AIOX)
+.aiox-core/local/
+.claude/settings.local.json
+.aiox/install-log.txt
+
+# DuckDB and dbt Local Artifacts
+# Riscos:
+# 1. Ignorar arquivos de metadados críticos do dbt (como dbt_project.yml) caso os padrões de wildcard sejam mal definidos.
+# 2. Commit indesejado de bases DuckDB gigantes de teste se forem salvas com outras extensões (.db ou .sql).
+# 3. Pacotes dbt de produção não estarem devidamente isolados gerando conflitos de dependências no Git.
+# Ambiguidades:
+# 1. Se a pasta dbt_packages deve ser commitada para garantir lock de dependências.
+# 2. Se arquivos temporários gerados por IDEs para DuckDB devem ser mapeados.
+*.duckdb
+*.duckdb.wal
+target/
+dbt_packages/
+dbt_modules/
