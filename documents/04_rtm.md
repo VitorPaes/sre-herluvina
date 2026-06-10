@@ -21,18 +21,18 @@ A tabela abaixo vincula os requisitos aos componentes RM-ODP e aos casos de test
 | **RF-09** | Funcional | Engenharia de Dados, SRE / [01_functional_requirements.md](file:///workspaces/sre-herluvina/documents/01_functional_requirements.md) | `Pipeline Shell Trigger` / `Minio Object Storage` | `TC-09` | **Coberto** |
 | **RNF-01** | Não Funcional | Engenharia de Dados, SRE / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `dbt CLI Engine` (`dbt test` constraints) | `TC-10` | **Coberto** |
 | **RNF-02** | Não Funcional | Engenharia de Dados, SRE / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Pipeline Shell Trigger` / `Minio Object Storage` | `TC-11` | **Coberto** |
-| **RNF-03** | Não Funcional | Liderança Executiva, Engenharia / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Pipeline Shell Trigger` (Timestamps check) | `TC-12` | **Coberto** |
+| **RNF-03** | Não Funcional | Liderança Executiva, Engenharia / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Pipeline Shell Trigger` (Timestamps check) | `TC-12` / `TC-26` | **Coberto** |
 | **RNF-04** | Não Funcional | SRE, Engenharia / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Pipeline Shell Trigger` (Log volume) | `TC-13` | **Coberto** |
-| **RNF-05** | Não Funcional | Analistas de BI / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `northwind.duckdb File` (Read-only flag) | `TC-14` | **Coberto** |
+| **RNF-05** | Não Funcional | Analistas de BI / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `northwind.duckdb File` (Read-only flag) | `TC-14` / `TC-24` | **Coberto** |
 | **RNF-06** | Não Funcional | Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Minio Object Storage` / `dbt-duckdb Adapter` | `TC-15` | **Coberto** |
-| **RNF-07** | Não Funcional | Analistas de BI / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `northwind.duckdb File` (Index/Query optimization) | `TC-16` | **Coberto** |
+| **RNF-07** | Não Funcional | Analistas de BI / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `northwind.duckdb File` (Index/Query optimization) | `TC-16` / `TC-24` / `TC-25` / `TC-27` | **Coberto** |
 | **RNF-08** | Não Funcional | Engenharia, SRE / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `dbt CLI Engine` (Materialization strategies) | `TC-17` | **Coberto** |
-| **RNF-09** | Não Funcional | SRE / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | *Nenhum componente nativo* (Ver Seção 3) | `TC-18` | **Aberto** |
-| **RNF-10** | Não Funcional | SRE / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Docker Compose` / `.gitignore` | `TC-19` | **Coberto** |
-| **RNF-11** | Não Funcional | Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | *Nenhum componente nativo* (Ver Seção 3) | `TC-20` | **Aberto** |
+| **RNF-09** | Não Funcional | SRE / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | *Nenhum componente nativo* (Ver Seção 3) | `TC-18` / `TC-25` / `TC-26` / `TC-27` / `TC-SEC-03` | **Coberto** |
+| **RNF-10** | Não Funcional | SRE / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Docker Compose` / `.gitignore` | `TC-19` / `TC-SEC-01` / `TC-SEC-04` | **Coberto** |
+| **RNF-11** | Não Funcional | Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | *Nenhum componente nativo* (Ver Seção 3) | `TC-20` / `TC-SEC-05` | **Aberto** |
 | **RNF-12** | Não Funcional | SRE, Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Pipeline Shell Trigger` (Alerting routine) | `TC-21` | **Coberto** |
 | **RNF-13** | Não Funcional | Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `dbt CLI Engine` (dbt-expectations) | `TC-22` | **Coberto** |
-| **RNF-14** | Não Funcional | SRE, Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Docker Compose` (Setup verification) | `TC-23` | **Coberto** |
+| **RNF-14** | Não Funcional | SRE, Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Docker Compose` (Setup verification) | `TC-23` / `TC-SEC-02` | **Coberto** |
 
 ---
 
@@ -63,18 +63,27 @@ Esta seção especifica a lógica de teste ou verificação de evidência para c
 *   **TC-21 (RNF-12)**: Simular uma falha de banco de dados (ex: arquivo de banco corrompido) e garantir que o script de trigger do pipeline capture a falha e escreva um alerta estruturado na auditoria do sistema em até 5 minutos.
 *   **TC-22 (RNF-13)**: Validar se a suíte de testes de dados do dbt e do dbt-expectations cobre pelo menos 90% das colunas finais das tabelas expostas.
 *   **TC-23 (RNF-14)**: Rodar o comando `docker compose up --build` em uma máquina nova/limpa e medir se o tempo total até a inicialização bem-sucedida do Minio e do Streamlit é menor ou igual a 15 minutos.
+*   **TC-24 (RNF-05 / RNF-07)**: Executar teste de carga simulando 20 usuários virtuais concorrentes no Streamlit realizando consultas analíticas, paralelamente à gravação concorrente de 50.000 registros pelo pipeline.
+*   **TC-25 (RNF-09 / RNF-07)**: Executar teste de soak (estabilidade prolongada) sob carga contínua de 10 usuários por 4 horas para identificar eventuais vazamentos de memória e degradação progressiva de latência.
+*   **TC-26 (RNF-09 / RNF-03)**: Executar teste de spike (pico repentino) elevando instantaneamente a carga para 100 usuários virtuais e injetando simultaneamente 250.000 registros analíticos no pipeline para verificar a resiliência a picos.
+*   **TC-27 (RNF-07 / RNF-09)**: Executar teste de estresse em escada de 10 até 300 usuários concorrentes sob volumetria de 1.000.000 de registros para identificar o ponto exato de quebra e saturação de recursos locais.
+*   **TC-SEC-01 (RNF-10)**: Rodar o analisador estático Bandit sobre o diretório do código-fonte Python (`app/`) para detectar injeções de comandos, SQL dynamic execution e brechas SAST comuns.
+*   **TC-SEC-02 (RNF-14)**: Executar varredura de composição SCA com Trivy no `requirements.txt` e nas imagens Docker do projeto para detectar dependências desatualizadas com CVEs críticas.
+*   **TC-SEC-03 (RNF-09)**: Realizar testes dinâmicos de vulnerabilidade DAST no Streamlit exposto usando a CLI do OWASP ZAP para detectar XSS, injeção de parâmetros e configurações incorretas de HTTP.
+*   **TC-SEC-04 (RNF-10)**: Configurar hooks pré-commit e varreduras com Gitleaks para detectar vazamento de chaves privadas do S3 ou credenciais no histórico do Git.
+*   **TC-SEC-05 (RNF-11)**: Executar varredura de postura de configuração com Prowler simulado sobre a API S3 compatível do container MinIO local para validar encriptação, permissões de buckets e controle de acesso.
 
 ---
 
 ## 3. Análise de Gaps e Requisitos "Abertos"
 
-Identificamos duas brechas analíticas (gaps) na infraestrutura local projetada na arquitetura que impedem a cobertura completa de dois Requisitos Não Funcionais (RNFs). Estes requisitos estão com status **Aberto**:
+Identificamos inicialmente duas brechas analíticas (gaps) na infraestrutura local projetada na arquitetura. Atualmente, apenas um requisito de auditoria de banco permanece classificado com o status **Aberto**:
 
-### Gap 1: RNF-09 (Disponibilidade e Uptime do Repositório Analítico Local)
+### Gap 1: RNF-09 (Disponibilidade e Uptime do Repositório Analítico Local) - Mitigado e Coberto
 *   **Motivo**: O DuckDB é um banco de dados embarcado e sem servidor (serverless/embedded). Ele funciona lendo e gravando direto em um arquivo local (`northwind.duckdb`). Isso significa que não há um "processo/serviço" de banco de dados que fica rodando continuamente em segundo plano para aceitar conexões TCP. O Uptime de 99.0% especificado em RNF-09 não pode ser testado por monitoramento de porta tradicional (ex: ping na porta 5432).
-*   **Mitigação Recomendada**: Mudar a abordagem de teste em `TC-18` para verificar a integridade física e disponibilidade do arquivo de banco no volume compartilhado por meio do container de health check do Streamlit.
+*   **Mitigação Adotada**: Coberto e mitigado por meio do plano de testes de carga em [documents/05_performance_test_plan.md](file:///workspaces/sre-herluvina/documents/05_performance_test_plan.md) (`TC-25`, `TC-26`, `TC-27`), que validam a disponibilidade do ecossistema local e a integridade de acesso ao arquivo DuckDB sob estresse contínuo pela aplicação do Streamlit.
 
-### Gap 2: RNF-11 (Rastreabilidade de Alterações de Dados - Logs DML)
+### Gap 2: RNF-11 (Rastreabilidade de Alterações de Dados - Logs DML) - Aberto
 *   **Motivo**: Como o DuckDB é um motor SQL embarcado em arquivos, ele não possui recursos nativos corporativos de triggers DML (tabelas de histórico de auditoria preenchidas automaticamente por gatilhos do banco ao inserir/deletar/atualizar linhas) e logs nativos avançados como o WAL (Write-Ahead Logging) do PostgreSQL. 
 *   **Mitigação Recomendada**: A auditoria das transformações deve ser implementada no nível da aplicação (via logs detalhados do dbt nas tabelas de run do dbt-artifacts ou por meio de tabelas de log preenchidas pelo próprio pipeline no dbt).
 
