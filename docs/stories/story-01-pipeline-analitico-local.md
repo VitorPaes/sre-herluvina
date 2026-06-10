@@ -41,6 +41,7 @@ Esta story gerencia a implementação de ponta a ponta do pipeline de ETL local 
 - [x] **Etapa 5: Validação Geral e Observabilidade**
   - [x] Executar suíte de testes ponta a ponta (TC-01 a TC-23)
   - [x] Implementar logs de auditoria DML programáticos
+  - [x] Desenvolver plano de testes de carga e performance (TC-24 a TC-27)
 
 ---
 
@@ -64,6 +65,7 @@ Esta story gerencia a implementação de ponta a ponta do pipeline de ETL local 
 - [x] [transform/models/marts/dim_shippers.sql](file:///workspaces/sre-herluvina/transform/models/marts/dim_shippers.sql)
 - [x] [transform/models/marts/fct_order_items.sql](file:///workspaces/sre-herluvina/transform/models/marts/fct_order_items.sql)
 - [x] [app/main.py](file:///workspaces/sre-herluvina/app/main.py)
+- [x] [documents/05_performance_test_plan.md](file:///workspaces/sre-herluvina/documents/05_performance_test_plan.md)
 
 ---
 
