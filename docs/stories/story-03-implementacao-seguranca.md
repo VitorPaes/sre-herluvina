@@ -1,74 +1,63 @@
-# Story: Implementação do Plano de Segurança - Northwind Traders
+# Story: Implementação do Hardening de Segurança com Foco em Portabilidade - Northwind Traders
 
 **ID**: STORY-03  
 **Status**: To Do  
 **Autor**: SRE / Security Engineer  
 
-Esta story gerencia a execução do plano de segurança e a automação dos testes de vulnerabilidade estruturados em [documents/06_security_test_plan.md](file:///workspaces/sre-herluvina/documents/06_security_test_plan.md). O escopo compreende a higienização de segredos em código, a ativação do Bandit (SAST), do Trivy (SCA), do OWASP ZAP (DAST), do Gitleaks (secret scanning) e a auditoria de postura do MinIO (Prowler), além do endurecimento (*hardening*) de containers Docker para operação local segura.
+Esta story gerencia a implementação das defesas de segurança detalhadas em [documents/06_security_test_plan.md](file:///workspaces/sre-herluvina/documents/06_security_test_plan.md), redesenhadas sob a premissa de **portabilidade absoluta** e facilidade de instalação (DevEx). As melhorias de segurança (login, HTTPS, retry de concorrência e não-root) serão configuradas para serem automáticas ou parametrizáveis via variáveis de ambiente no `.env`, garantindo que qualquer desenvolvedor consiga clonar e rodar o projeto localmente com configuração zero (*plug-and-play*).
 
 ---
 
 ## 1. Critérios de Aceitação
 
-*   **AC-01**: Hooks de pré-commit do Gitleaks ativados localmente impedindo commits com credenciais em texto plano (**TC-SEC-04**).
-*   **AC-02**: Execução local do Bandit integrada para auditoria SAST do diretório de código Python (`app/`), com relatório livre de falhas de alta severidade (**TC-SEC-01**).
-*   **AC-03**: Varredura SCA com Trivy ativa sobre dependências e imagens base Docker, garantindo ausência de CVEs críticas sem mitigação (**TC-SEC-02**).
-*   **AC-04**: Containers Docker configurados para rodar sob usuário comum sem privilégios (*non-root*), isolando o host local.
-*   **AC-05**: Dashboard analítico Streamlit protegido por HTTPS (SSL/TLS local) e camada de autenticação básica para acesso interno.
-*   **AC-06**: Scripts automatizados de scans dinâmicos locais (OWASP ZAP para DAST e Prowler para postura S3) executáveis via terminal CLI (**TC-SEC-03** e **TC-SEC-05**).
+*   **AC-01**: Autenticação local para o dashboard Streamlit implementada por meio de variáveis de ambiente do `.env` (`DASHBOARD_USER`/`DASHBOARD_PASSWORD`), sem dependência de IDPs ou bancos externos de credenciais.
+*   **AC-02**: Geração dinâmica de certificados SSL autoassinados em tempo de inicialização (via script Python embarcado no container), tornando o HTTPS opcional e configurável via variável de ambiente (`STREAMLIT_ENABLE_SSL=true/false`).
+*   **AC-03**: Mecanismo de Retry e Backoff implementado na conexão do DuckDB (`app/main.py`) para tratar falhas de lock de escrita do dbt de forma transparente para o analista, solucionando **RNF-05** sem quebrar a execução local.
+*   **AC-04**: Containers Docker endurecidos para executar sob usuário comum (`appuser`), garantindo que permissões de escrita nos volumes locais mapeados (`./data`) sejam compatíveis dinamicamente entre Linux, macOS e Windows (WSL).
+*   **AC-05**: Scripts utilitários de varredura (Bandit, Trivy, Gitleaks) empacotados em containers Docker executados sob demanda pelo script CLI `bin/run-security-scans.sh`, dispensando instalações manuais na máquina física do desenvolvedor.
 
 ---
 
 ## 2. Checklist de Progresso
 
-Mapeamento de tarefas separado pelas 3 partes operacionais definidas no plano de segurança:
-
-- [ ] **Etapa 1: Higienização de Código e Gestão de Segredos**
-  - [ ] Instalar CLI do Gitleaks no host de desenvolvimento
-  - [ ] Configurar hook `pre-commit` local via ferramenta git hooks
-  - [ ] Adicionar arquivo `.env` e chaves privadas do MinIO explicitamente no `.gitignore`
-  - [ ] Executar scan completo do histórico do Git com Gitleaks e sanar vazamentos históricos
-- [ ] **Etapa 2: Análise Estática e Endurecimento de Build (SAST / SCA)**
-  - [ ] Configurar e rodar Bandit localmente (`bandit -r app/`) gerando relatórios JSON de vulnerabilidades
-  - [ ] Criar arquivo de regras de exceção do Bandit para ignorar falsos positivos aceitos
-  - [ ] Integrar Trivy no processo de build local do docker-compose para escanear `requirements.txt`
-  - [ ] Modificar o `Dockerfile` para incluir criação de grupo/usuário (`appuser`) e diretriz `USER appuser`
-  - [ ] Ajustar permissões de escrita do volume `northwind.duckdb` no host para o novo `appuser` do container
-- [ ] **Etapa 3: Defesa Operacional e Auditoria Dinâmica (DAST / Posture)**
-  - [ ] Implementar login e senha criptografados locais para a interface Streamlit
-  - [ ] Configurar certificados autoassinados via OpenSSL local para ativar HTTPS no Streamlit e MinIO
-  - [ ] Configurar container do OWASP ZAP CLI local para rodar scans de vulnerabilidade contra a porta `8501`
-  - [ ] Criar script script wrapper para rodar Prowler contra a API S3 local do container MinIO
-  - [ ] Consolidar todas as ferramentas de scan em um script unificador `bin/run-security-scans.sh`
-  - [ ] Atualizar status dos testes de segurança na Matriz de Rastreabilidade (RTM)
+- [ ] **Etapa 1: Segurança de Acesso e Gestão de Segredos**
+  - [ ] Adicionar variáveis `DASHBOARD_USER` e `DASHBOARD_PASSWORD` no `.env.example`
+  - [ ] Implementar interface de login básica e segura em `app/main.py` consumindo estas variáveis de ambiente
+  - [ ] Remover fallbacks de credenciais do MinIO do código em `app/ingest.py` e forçar interrupção com erro caso ausentes
+  - [ ] Instalar o hook de pré-commit do Gitleaks de forma opcional via script de inicialização local
+- [ ] **Etapa 2: HTTPS Automático Opcional e Hardening de Permissões**
+  - [ ] Adicionar variável `STREAMLIT_ENABLE_SSL=false` no `.env.example`
+  - [ ] Criar script de inicialização Python (`app/entrypoint.py`) que gera chaves OpenSSL autoassinadas caso `STREAMLIT_ENABLE_SSL=true` e os arquivos não existam
+  - [ ] Atualizar `docker-compose.yml` para expor o Streamlit em HTTPS condicional e rodar sob o ID do usuário do host de forma dinâmica (`user: "${UID}:${GID}"`)
+  - [ ] Testar montagem de volume `./data` em modo leitura/escrita sob a nova regra de permissões em diferentes sistemas
+- [ ] **Etapa 3: Resiliência de Banco e Automação de Scans CLI**
+  - [ ] Implementar lógica de Retry (3 tentativas com sleep de 0.5s) para capturar exceções de lock do DuckDB em `app/main.py`
+  - [ ] Criar script CLI `bin/run-security-scans.sh` que executa Bandit (SAST), Trivy (SCA) e Gitleaks (Secrets) via Docker local sob demanda
+  - [ ] Validar a execução ponta a ponta dos testes de segurança (`TC-SEC-01` a `TC-SEC-05`)
+  - [ ] Atualizar os status na Matriz de Rastreabilidade (RTM)
 
 ---
 
 ## 3. Lista de Arquivos Planejada (File List)
 
-Esta lista especifica os arquivos de código e infraestrutura que serão criados ou editados no decorrer da story:
-
-- [ ] `bin/run-security-scans.sh` -> Script unificador que dispara Bandit, Trivy, Gitleaks, ZAP e Prowler localmente.
-- [ ] `Dockerfile` -> Modificado para implementar segurança de containers (Non-root user).
-- [ ] `docker-compose.yml` -> Atualizado com configurações HTTPS (volumes de certificados) e isolamento de rede.
-- [ ] `app/main.py` -> Atualizado com lógica de autenticação básica para os analistas de BI.
-- [ ] `.gitleaks.toml` -> Configuração customizada de regras e exceções do Gitleaks.
-- [ ] `documents/07_security_compliance_report.md` -> Relatório contendo as análises dos resultados obtidos nos testes dinâmicos de segurança.
+- [ ] `app/entrypoint.py` -> Script em Python para checagem e geração dinâmica de SSL e boot da aplicação.
+- [ ] `bin/run-security-scans.sh` -> Script de disparo dos scans de segurança rodando k6 e contêineres de validação estática.
+- [ ] `app/main.py` -> Editado para incluir tratamento de login local e retries de conexão do DuckDB.
+- [ ] `Dockerfile` -> Atualizado para configurar o usuário dinâmico e dependências de criptografia do Python.
+- [ ] `docker-compose.yml` -> Editado para dar suporte ao mapeamento dinâmico de IDs de usuário do host.
 
 ---
 
 ## 4. Riscos e Ambiguidades
 
-Abaixo estão listados os riscos estruturais e as ambiguidades identificadas na execução desta story.
-
 ### Riscos Técnicos de Implementação (3)
-1.  **Bloqueio de Commits Locais por Falsos Positivos do Gitleaks**: O hook pre-commit do Gitleaks pode detectar falsos positivos (ex: strings de testes matemáticos de frete ou hashes normais interpretados como chaves privadas), impedindo a produtividade diária do desenvolvedor (retardando entregas de dbt/Python).
-2.  **Perda de Acesso ao Arquivo DuckDB por Conflitos de Permissão Non-Root**: Ao alterar os containers para rodar sob um usuário não-privilegiado (`appuser`), a montagem do volume físico local `./data/northwind.duckdb` pode falhar por falta de permissão de escrita/leitura no host OS, paralisando o Streamlit e o dbt runner até que as ACLs do host sejam ajustadas manualmente.
-3.  **Bypass Silencioso de Alertas de HTTPS no k6 e ZAP**: Para testar a segurança em ambiente puramente local sem domínios válidos, as ferramentas de teste (k6, OWASP ZAP) precisam rodar com flags de desabilitação de verificação SSL/TLS (`insecureSkipTLSVerify` ou similar). Isso pode fazer com que o desenvolvedor se acostume a ignorar certificados inválidos, abrindo brecha para ataques reais de falsificação de domínio no ambiente local de escritório.
+1.  **Divergência de Variáveis UID/GID em Ambientes Windows**: A variável de ambiente `${UID}` e `${GID}` é populada nativamente em shells Unix (Linux/macOS), mas não existe no Prompt de Comando ou PowerShell do Windows. Desenvolvedores Windows rodando o docker-compose diretamente sem passar as variáveis podem enfrentar erros de parser de string vazia no Docker.
+2.  **Incompatibilidade de Navegador com HTTPS Autoassinado local**: O k6 ou o navegador podem rejeitar por completo o tráfego do Streamlit caso o SSL autoassinado seja ativado, exigindo que o desenvolvedor aceite exceções de segurança locais manualmente, o que prejudica a experiência DevEx.
+3.  **Falso Senso de Segurança na Autenticação Local por .env**: Usuários experientes podem acessar o container do Streamlit ou ler o arquivo `.env` local na máquina para obter a senha em texto plano. Esta autenticação local protege apenas contra acessos não autorizados de terceiros na mesma rede física de escritório, e não contra ataques com privilégios locais de hardware.
 
 ### Ambiguidades Pendentes (2)
-1.  **Origem e Armazenamento dos Certificados SSL Locais**: Resta ambíguo quem gerencia e renova os certificados SSL autoassinados gerados localmente via OpenSSL. Se os certificados expirarem silenciosamente sem um processo automático de renovação scriptado, o ecossistema local do Streamlit e MinIO parará de responder às chamadas analíticas da rede interna (quebrando o SLO de disponibilidade do RNF-09).
-2.  **Mapeamento de Usuários Fictícios vs Identidades Reais**: Como o Streamlit operará offline (on-premises) sem um serviço de diretórios LDAP/AD unificado, a autenticação das contas de usuários do dashboard deverá ser chumbada em variáveis de ambiente locais do container. Isso gera ambiguidade sobre como gerenciar e atualizar senhas com segurança, sem expô-las no Git, caso novos analistas entrem ou saiam da Northwind Traders.
+1.  **Compatibilidade do Script de Certificados sem OpenSSL no Host**: Se o container Python-slim do Docker não possuir o binário do OpenSSL ou a biblioteca de criptografia instalada, a geração dinâmica de chaves falhará no boot, impossibilitando a inicialização da aplicação sob HTTPS.
+2.  **Mecanismo de Escapamento do Retry em Caso de Falha de Escrita**: Caso o pipeline diário do dbt trave no dbt run (deixando o lock de escrita aberto infinitamente no DuckDB), os retries de conexão do Streamlit se esgotarão em 1.5 segundos, gerando erros recorrentes na tela. Resta ambíguo se devemos aumentar o número de tentativas e o atraso (delay) caso o processo de ETL concorrente esteja ativo.
 
 ---
 *Fim do Documento da Story.*
