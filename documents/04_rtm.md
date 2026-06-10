@@ -27,12 +27,12 @@ A tabela abaixo vincula os requisitos aos componentes RM-ODP e aos casos de test
 | **RNF-06** | Não Funcional | Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Minio Object Storage` / `dbt-duckdb Adapter` | `TC-15` | **Coberto** |
 | **RNF-07** | Não Funcional | Analistas de BI / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `northwind.duckdb File` (Index/Query optimization) | `TC-16` / `TC-24` / `TC-25` / `TC-27` | **Coberto** |
 | **RNF-08** | Não Funcional | Engenharia, SRE / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `dbt CLI Engine` (Materialization strategies) | `TC-17` | **Coberto** |
-| **RNF-09** | Não Funcional | SRE / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | *Nenhum componente nativo* (Ver Seção 3) | `TC-18` / `TC-25` / `TC-26` / `TC-27` | **Coberto** |
-| **RNF-10** | Não Funcional | SRE / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Docker Compose` / `.gitignore` | `TC-19` | **Coberto** |
-| **RNF-11** | Não Funcional | Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | *Nenhum componente nativo* (Ver Seção 3) | `TC-20` | **Aberto** |
+| **RNF-09** | Não Funcional | SRE / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | *Nenhum componente nativo* (Ver Seção 3) | `TC-18` / `TC-25` / `TC-26` / `TC-27` / `TC-SEC-03` | **Coberto** |
+| **RNF-10** | Não Funcional | SRE / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Docker Compose` / `.gitignore` | `TC-19` / `TC-SEC-01` / `TC-SEC-04` | **Coberto** |
+| **RNF-11** | Não Funcional | Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | *Nenhum componente nativo* (Ver Seção 3) | `TC-20` / `TC-SEC-05` | **Aberto** |
 | **RNF-12** | Não Funcional | SRE, Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Pipeline Shell Trigger` (Alerting routine) | `TC-21` | **Coberto** |
 | **RNF-13** | Não Funcional | Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `dbt CLI Engine` (dbt-expectations) | `TC-22` | **Coberto** |
-| **RNF-14** | Não Funcional | SRE, Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Docker Compose` (Setup verification) | `TC-23` | **Coberto** |
+| **RNF-14** | Não Funcional | SRE, Engenharia de Dados / [02_non_functional_requirements.md](file:///workspaces/sre-herluvina/documents/02_non_functional_requirements.md) | `Docker Compose` (Setup verification) | `TC-23` / `TC-SEC-02` | **Coberto** |
 
 ---
 
@@ -67,6 +67,11 @@ Esta seção especifica a lógica de teste ou verificação de evidência para c
 *   **TC-25 (RNF-09 / RNF-07)**: Executar teste de soak (estabilidade prolongada) sob carga contínua de 10 usuários por 4 horas para identificar eventuais vazamentos de memória e degradação progressiva de latência.
 *   **TC-26 (RNF-09 / RNF-03)**: Executar teste de spike (pico repentino) elevando instantaneamente a carga para 100 usuários virtuais e injetando simultaneamente 250.000 registros analíticos no pipeline para verificar a resiliência a picos.
 *   **TC-27 (RNF-07 / RNF-09)**: Executar teste de estresse em escada de 10 até 300 usuários concorrentes sob volumetria de 1.000.000 de registros para identificar o ponto exato de quebra e saturação de recursos locais.
+*   **TC-SEC-01 (RNF-10)**: Rodar o analisador estático Bandit sobre o diretório do código-fonte Python (`app/`) para detectar injeções de comandos, SQL dynamic execution e brechas SAST comuns.
+*   **TC-SEC-02 (RNF-14)**: Executar varredura de composição SCA com Trivy no `requirements.txt` e nas imagens Docker do projeto para detectar dependências desatualizadas com CVEs críticas.
+*   **TC-SEC-03 (RNF-09)**: Realizar testes dinâmicos de vulnerabilidade DAST no Streamlit exposto usando a CLI do OWASP ZAP para detectar XSS, injeção de parâmetros e configurações incorretas de HTTP.
+*   **TC-SEC-04 (RNF-10)**: Configurar hooks pré-commit e varreduras com Gitleaks para detectar vazamento de chaves privadas do S3 ou credenciais no histórico do Git.
+*   **TC-SEC-05 (RNF-11)**: Executar varredura de postura de configuração com Prowler simulado sobre a API S3 compatível do container MinIO local para validar encriptação, permissões de buckets e controle de acesso.
 
 ---
 
